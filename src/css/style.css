@@ -1,0 +1,98 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  flex-grow: 1;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+#error ui5-message-strip {
+  max-width: 450px;
+}
+
+ui5-table#extraPaymentsTable {
+  max-width: 75%;
+}
+
+ui5-table ui5-table-column.table-header-text-alignment::part(column) {
+  text-align: center;
+}
+
+.hidden {
+  display: none;
+}
+
+#infoSection.hidden {
+  display: none;
+}
+
+#infoSection {
+  display: flex;
+  /* height: 500px; */
+}
+
+#charts {
+  display: flex;
+  height: 400px;
+  justify-content: space-between;
+}
+
+div#lineChart {
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+div#pieChart {
+  flex-grow: 1;
+  flex-shrink: 1;
+}

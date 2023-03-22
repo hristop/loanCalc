@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <title>Loan Calculator</title>
+  </head>
+  <body>
+    <main id="app">
+      <h2>Loan Calculator</h2>
+      <span id="error"></span>
+      <form>
+        <h3>Basic Information</h3>
+        <ui5-label for="startDate" required>Start Date:</ui5-label>
+        <ui5-date-picker id="startDate" format-pattern="dd/MM/yyyy"></ui5-date-picker>
+        <br>
+        <ui5-label for="loanAmount" required>Loan Amount:</ui5-label>
+        <ui5-input type="number" id="loanAmount" placeholder="Enter loan amount"></ui5-input>
+        <br>
+        <ui5-label for="interestRate" required>Interest Rate (%):</ui5-label>
+        <ui5-input type="number" id="interestRate" placeholder="Enter interest rate"></ui5-input>
+        <br>
+        <ui5-label for="loanTerm" required>Loan Term (months):</ui5-label>
+        <ui5-input type="number" id="loanTerm" placeholder="Enter loan term"></ui5-input>
+        <br>
+        <h3>Advanced Information</h3>
+        <h4>Extra Payments</h4>
+        <div id="extraPayments"></div>
+        <ui5-button id="addExtraPayment">Add extra payment</ui5-button>
+        <h4>Regular Payments</h4>
+
+        <ui5-button id="calcBtn">Calculate</ui5-button>
+      </form>
+      <section id="info" class="hidden">
+        <h2>Information</h2>
+        <div  id="info"></div>
+        <div  id="charts">
+          <div id="lineChart"></div>
+          <div id="pieChart"></div>
+        </div>
+      </section>
+      <section class="hidden">
+        <h2>Per month table</h2>
+        <div id="table"></div>
+      </section>
+    </main>
+    <script type="module" src="/src/js/main.js"></script>
+  </body>
+</html>

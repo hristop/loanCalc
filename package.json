@@ -1,0 +1,19 @@
+{
+  "name": "vite-project",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^4.1.0"
+  },
+  "dependencies": {
+    "@ui5/webcomponents": "^1.11.0",
+    "@ui5/webcomponents-icons": "^1.11.0",
+    "moment": "^2.29.4"
+  }
+}
