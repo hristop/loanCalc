@@ -2,7 +2,6 @@
 Loan Calculator
 
 ## Start the calculator
-____
 Install the packages
 ```
 npm install
@@ -20,7 +19,6 @@ npm run preview
 Follow the link provided in the console.
 
 ## How to use
-_____
 
 The calculator takes few basic parameters which are:
 * `Starting date`: date, which will be considered as start of calculations and will be used to show when the loan will be completely payed off.
