@@ -1,4 +1,19 @@
-export function setUpExtraPayments (elementsMap) {
+const gatherAdditionalPayments = () => {
+    const additionalPayments = [];
+    const additionalPaymentRows = document.querySelectorAll("#extraPaymentsTable ui5-table-row");
+
+    additionalPaymentRows.forEach((row, index) => {
+        const month = Number.parseFloat(row.querySelectorAll("ui5-input")[0].value);
+        const ammount = Number.parseFloat(row.querySelectorAll("ui5-input")[1].value);
+        const newMonthly = Number.parseFloat(row.querySelectorAll("ui5-input")[2].value) || 0;
+
+        additionalPayments.push([month, ammount, newMonthly]);
+    });
+
+    return additionalPayments;
+}
+
+function setUpExtraPayments (addExtraPaymentsButton) {
     const addTable = () => {
         const containerDom = document.querySelector('#extraPayments');
         containerDom.innerHTML = `
@@ -59,5 +74,10 @@ export function setUpExtraPayments (elementsMap) {
         table.appendChild(row);
     };
 
-    elementsMap.extraPaymentsAddButton && elementsMap.extraPaymentsAddButton.addEventListener('click', () => addExtraPayment());
+    addExtraPaymentsButton && addExtraPaymentsButton.addEventListener('click', () => addExtraPayment());
 };
+
+export {
+    setUpExtraPayments,
+    gatherAdditionalPayments
+}

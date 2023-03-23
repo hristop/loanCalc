@@ -1,6 +1,6 @@
 import '../css/style.css'
 import { setUpCalc } from './calcLoan'
-import { setUpExtraPayments } from './addExtraPayment';
+import { setUpExtraPayments } from './extraPayment';
 
 import "@ui5/webcomponents/dist/Button.js";
 import "@ui5/webcomponents/dist/Input.js";
@@ -37,8 +37,6 @@ const startDate = document.getElementById("startDate");
 startDate.setAttribute('value', today);
 // startDate.setAttribute('max-date', today);
 
-setUpExtraPayments({
-  extraPaymentsAddButton: document.querySelector('#addExtraPayment')
-});
-setUpCalc(document.querySelector('#calcBtn'));
+setUpExtraPayments(document.getElementById('addExtraPayment'));
+setUpCalc(document.getElementById('calcBtn'));
 
