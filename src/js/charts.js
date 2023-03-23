@@ -3,7 +3,7 @@ const drawLineChart = lineChartData => {
 
     var options = {
         title: "Loan Payment Schedule",
-        curveType: "function",
+        //curveType: "function",
         legend: {
             position: "right",
             alignment: "center"

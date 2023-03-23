@@ -8,41 +8,48 @@
   </head>
   <body>
     <main id="app">
-      <h2>Loan Calculator</h2>
-      <span id="error"></span>
-      <form>
-        <h3>Basic Information</h3>
-        <ui5-label for="startDate" required>Start Date:</ui5-label>
-        <ui5-date-picker id="startDate" format-pattern="dd/MM/yyyy"></ui5-date-picker>
-        <br>
-        <ui5-label for="loanAmount" required>Loan Amount:</ui5-label>
-        <ui5-input type="number" id="loanAmount" placeholder="Enter loan amount"></ui5-input>
-        <br>
-        <ui5-label for="interestRate" required>Interest Rate (%):</ui5-label>
-        <ui5-input type="number" id="interestRate" placeholder="Enter interest rate"></ui5-input>
-        <br>
-        <ui5-label for="loanTerm" required>Loan Term (months):</ui5-label>
-        <ui5-input type="number" id="loanTerm" placeholder="Enter loan term"></ui5-input>
-        <br>
-        <h3>Extra Payments</h3>
-        <div id="extraPayments"></div>
-        <ui5-button id="addExtraPayment">Add extra payment</ui5-button>
-        <h3 class="hidden">Regular Payments</h3>
-        <br>
-        <ui5-button id="calcBtn">Calculate</ui5-button>
-      </form>
-      <section id="info" class="hidden">
-        <h2>Information</h2>
-        <div  id="info"></div>
-        <div  id="charts">
-          <div id="lineChart"></div>
-          <div id="pieChart"></div>
-        </div>
-      </section>
-      <section class="hidden">
-        <h2>Per month table</h2>
-        <div id="table"></div>
-      </section>
+      <h1>Loan Calculator</h1>
+      <ui5-panel
+        fixed accessible-role="Complementary"
+        header-text="Basic Information">
+        <span id="error"></span>
+        <form>
+          <ui5-label for="startDate" required>Start Date:</ui5-label>
+          <ui5-date-picker id="startDate" format-pattern="dd/MM/yyyy"></ui5-date-picker>
+          <br>
+          <ui5-label for="loanAmount" required>Loan Amount:</ui5-label>
+          <ui5-input type="number" id="loanAmount" placeholder="Enter loan amount"></ui5-input>
+          <br>
+          <ui5-label for="interestRate" required>Interest Rate (%):</ui5-label>
+          <ui5-input type="number" id="interestRate" placeholder="Enter interest rate"></ui5-input>
+          <br>
+          <ui5-label for="loanTerm" required>Loan Term (months):</ui5-label>
+          <ui5-input type="number" id="loanTerm" placeholder="Enter loan term"></ui5-input>
+          <br>
+          <h3>Extra Payments</h3>
+          <div id="extraPayments"></div>
+          <ui5-button id="addExtraPayment">Add extra payment</ui5-button>
+          <h3 class="hidden">Regular Payments</h3>
+          <br>
+          <ui5-button id="calcBtn" design="Emphasized">Calculate</ui5-button>
+        </form>
+      </ui5-panel>
+      <ui5-panel
+        fixed accessible-role="Complementary"
+        header-text="Payment Information"
+        class="hidden">
+          <div  id="info"></div>
+          <div  id="charts">
+            <div id="lineChart"></div>
+            <div id="pieChart"></div>
+          </div>
+      </ui5-panel>
+      <ui5-panel
+        fixed accessible-role="Complementary"
+        header-text="Per month table"
+        class="hidden">
+          <div id="table"></div>
+      </ui5-panel>
     </main>
     <script type="module" src="/src/js/main.js"></script>
   </body>

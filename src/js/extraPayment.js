@@ -47,6 +47,8 @@ function setUpExtraPayments (addExtraPaymentsButton) {
             if (table.querySelectorAll('ui5-table-row').length === 0) {
                 document.getElementById('extraPayments').innerHTML = '';
             }
+
+            setTimeout(() => document.getElementById("addExtraPayment").focus(), 100);
         }
 
         if (!containerDom.innerHTML) {
@@ -72,6 +74,8 @@ function setUpExtraPayments (addExtraPaymentsButton) {
         row.appendChild(cell);
 
         table.appendChild(row);
+
+        setTimeout(() => row.focus(), 100);
     };
 
     addExtraPaymentsButton && addExtraPaymentsButton.addEventListener('click', () => addExtraPayment());

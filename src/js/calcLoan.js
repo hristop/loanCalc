@@ -8,6 +8,7 @@ import moment from 'moment';
 export function setUpCalc(element) {
     const calcLoanData = (loanData, includeAddPayments) => {
         // Calculate monthly payment
+        let startMonth = moment(loanData.basicInfo.startMonth, "MM/YYYY");
         const monthlyInterestRate = loanData.basicInfo.interestRate / 12;
         let monthlyPayment =
             (loanData.basicInfo.loanAmount * monthlyInterestRate) /
@@ -19,7 +20,7 @@ export function setUpCalc(element) {
         for (let index = 1; index <= loanData.basicInfo.loanTerm; index++) {
             let bLastMonth = false;
             let addMonthPayment = 0; // Used for the month with additional payment
-            const currentMonth = loanData.basicInfo.startDate.add(1, 'M');
+            const currentMonth = startMonth.add(1, 'M');
 
             //Gather additional payments and substract them from the remaining balance
             includeAddPayments && loanData.additionalPayments.forEach((payment) => {
@@ -50,9 +51,9 @@ export function setUpCalc(element) {
             }
 
             if (includeAddPayments) {
-                loanData.withAddPaymentsData.perMonth.push({
+                loanData.allPaymentsData.perMonth.push({
                     index,
-                    currentMonth,
+                    currentMonth: currentMonth.format("MM/YYYY"),
                     monthlyPayment,
                     addMonthPayment,
                     principalPaid,
@@ -63,7 +64,7 @@ export function setUpCalc(element) {
             } else {
                 loanData.noAddPaymentsData.perMonth.push({
                     index,
-                    currentMonth,
+                    currentMonth: currentMonth.format("MM/YYYY"),
                     monthlyPayment,
                     addMonthPayment,
                     principalPaid,
@@ -83,7 +84,7 @@ export function setUpCalc(element) {
             if (bLastMonth) {
                 // Extract total interest
                 includeAddPayments ?
-                    loanData.withAddPaymentsData.totalInterestPaid = totalInterestPaid :
+                    loanData.allPaymentsData.totalInterestPaid = totalInterestPaid :
                     loanData.noAddPaymentsData.totalInterestPaid = totalInterestPaid;
 
                 // Pie chart data
@@ -94,9 +95,38 @@ export function setUpCalc(element) {
         }
     }
 
+    const generateAdditionalInformation = loanData => {
+        const info = document.getElementById('info');
+
+        loanData.allPaymentsData.currentTotalPayment = loanData.basicInfo.loanAmount + loanData.allPaymentsData.totalInterestPaid;
+
+        let infoHtml = `
+            <div>
+                <ui5-badge color-scheme="6">Total payment: ${(loanData.allPaymentsData.currentTotalPayment).toFixed(2)}</ui5-badge>
+                <br>
+                <ui5-badge color-scheme="1">Interest: ${(loanData.allPaymentsData.totalInterestPaid).toFixed(2)}</ui5-badge>
+                <br>
+            </div>
+        `;
+
+        if (loanData.additionalPayments.length) {
+            infoHtml += `
+                <div>
+                    <ui5-badge color-scheme="5">Initial total payment: ${(loanData.basicInfo.loanAmount + loanData.noAddPaymentsData.totalInterestPaid).toFixed(2)}</ui5-badge>
+                    <br>
+                    <ui5-badge color-scheme="8">Interest saved: ${(loanData.noAddPaymentsData.totalInterestPaid - loanData.allPaymentsData.totalInterestPaid).toFixed(2)}</ui5-badge>
+                    <br>
+                </div>
+            `;
+        }
+
+        info.innerHTML = infoHtml;
+    }
+
     const calculate = () => {
         // Get input values
         const startDate = moment(document.getElementById("startDate").value, "DD/MM/YYYY");
+        //const startDate = document.getElementById("startDate").value;
         const loanAmount = Number.parseFloat(document.getElementById("loanAmount").value);
         const interestRate = Number.parseFloat(document.getElementById("interestRate").value) / 100;
         const loanTerm = Number.parseFloat(document.getElementById("loanTerm").value);
@@ -108,6 +138,7 @@ export function setUpCalc(element) {
             return;
         }
 
+        const startMonth = startDate.format('MM/YYYY');
         let lineChartData = [
             ["Month", "Principal", "Interest"],
             [0, loanAmount, 0],
@@ -117,11 +148,11 @@ export function setUpCalc(element) {
         ];
 
         // Show all sections
-        document.querySelectorAll('section.hidden').forEach(section => section.classList.remove('hidden'));
+        document.querySelectorAll('ui5-panel.hidden').forEach(panel => panel.classList.remove('hidden'));
 
         const allPaymentsData = {
             basicInfo: {
-                startDate,
+                startMonth,
                 loanAmount,
                 interestRate,
                 loanTerm
@@ -130,21 +161,23 @@ export function setUpCalc(element) {
             noAddPaymentsData: {
                 perMonth: []
             },
-            withAddPaymentsData: {
+            allPaymentsData: {
                 perMonth: []
             },
             lineChartData,
             pieChartData
         }
 
-        calcLoanData(allPaymentsData, false);
+        additionalPayments.length && calcLoanData(allPaymentsData, false);
         calcLoanData(allPaymentsData, true);
 
+        generateAdditionalInformation(allPaymentsData);
+
         // Render the per month table
-        let tableHtml = allPaymentsData.withAddPaymentsData.perMonth.reduce((tableHtml, rowData) => {
+        let tableHtml = allPaymentsData.allPaymentsData.perMonth.reduce((tableHtml, rowData) => {
             return tableHtml += renderMonthTableRow(rowData);
         }, renderMonthTableStart({
-            startDate,
+            startMonth,
             loanAmount
         }));
         tableHtml += renderMonthTableEnd();

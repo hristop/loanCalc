@@ -29,6 +29,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #cfcfcf;
 }
 
 h1 {
@@ -62,11 +63,25 @@ h1 {
 }
 
 ui5-table#extraPaymentsTable {
-  max-width: 75%;
+  max-width: 95%;
 }
 
 ui5-table ui5-table-column.table-header-text-alignment::part(column) {
   text-align: center;
+}
+
+ui5-message-strip {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+ui5-panel {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+ui5-button {
+  margin-top: 1rem;
 }
 
 .hidden {
@@ -75,11 +90,6 @@ ui5-table ui5-table-column.table-header-text-alignment::part(column) {
 
 #infoSection.hidden {
   display: none;
-}
-
-#infoSection {
-  display: flex;
-  /* height: 500px; */
 }
 
 #charts {
