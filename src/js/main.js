@@ -43,10 +43,10 @@ startDate.setAttribute('value', today);
 
 setUpExtraPayments(document.getElementById('addExtraPayment'));
 setUpCalc(document.getElementById('calcBtn'));
-document.getElementById('fixedPrincipal').addEventListener('change', event => {
-    if (event.target.checked) {
-        document.getElementById('addExtraPayment').setAttribute('disabled', true);
-    } else {
-        document.getElementById('addExtraPayment').removeAttribute('disabled');
-    }
-});
+// document.getElementById('fixedPrincipal').addEventListener('change', event => {
+//     if (event.target.checked) {
+//         document.getElementById('addExtraPayment').setAttribute('disabled', true);
+//     } else {
+//         document.getElementById('addExtraPayment').removeAttribute('disabled');
+//     }
+// });

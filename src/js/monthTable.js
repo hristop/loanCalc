@@ -75,13 +75,13 @@ const renderMonthTableRow = data => {
                 <span><b>${(data.monthlyPayment + data.addMonthPayment).toFixed(2)}</b></span>
             </ui5-table-cell>
             <ui5-table-cell>
-                <span><b>${data.principalPaid.toFixed(2)}</b></span>
+                <span><b>${data.monthlyPrincipal.toFixed(2)}</b></span>
             </ui5-table-cell>
             <ui5-table-cell>
-                <span><b>${data.interestPaid.toFixed(2)}</b></span>
+                <span><b>${data.monthlyInterest.toFixed(2)}</b></span>
             </ui5-table-cell>
             <ui5-table-cell>
-                <span><b>${data.totalInterestPaid.toFixed(2)}</b></span>
+                <span><b>${data.totalMonthlyInterest.toFixed(2)}</b></span>
             </ui5-table-cell>
             <ui5-table-cell>
                 <span><b>${data.remainingPrincipal.toFixed(2)}</b></span>
