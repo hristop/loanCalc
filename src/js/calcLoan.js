@@ -6,91 +6,170 @@ import { drawLineChart, drawPieChart } from "./charts";
 import moment from 'moment';
 
 export function setUpCalc(element) {
-    const calcLoanData = (loanData, includeAddPayments) => {
+    const calcLoanData = (loanData, includeAddPayments, isFixedPrincipal) => {
         // Calculate monthly payment
         let startMonth = moment(loanData.basicInfo.startMonth, "MM/YYYY");
         const monthlyInterestRate = loanData.basicInfo.interestRate / 12;
-        let monthlyPayment =
-            (loanData.basicInfo.loanAmount * monthlyInterestRate) /
-            (1 - Math.pow(1 + monthlyInterestRate, -loanData.basicInfo.loanTerm));
 
-        let remainingPrincipal = loanData.basicInfo.loanAmount;
-        let totalInterestPaid = 0;
+        if (isFixedPrincipal) {
+            // TODO Refactor this (WIP)
 
-        for (let index = 1; index <= loanData.basicInfo.loanTerm; index++) {
-            let bLastMonth = false;
-            let addMonthPayment = 0; // Used for the month with additional payment
-            const currentMonth = startMonth.add(1, 'M');
+            // Calculate the monthly interest rate
+            let monthlyRate = monthlyInterestRate;
 
-            //Gather additional payments and substract them from the remaining balance
-            includeAddPayments && loanData.additionalPayments.forEach((payment) => {
-                if (payment[0] === index) {
-                    if(!isNaN(payment[1])) {
-                        // the amount that was payed additionally
-                        addMonthPayment += payment[1];
-                    }
+            // Calculate the total number of payments
+            let payments = loanData.basicInfo.loanTerm;
 
-                    if (payment[2]) {
-                        // new monthly payment if such arrangement was made
-                        monthlyPayment = payment[2];
-                    }
-                }
-            });
+            let totalAmount, totalInterest, balance;
+            // Fixed principal payment (varying monthly)
+            // Calculate the decreasing monthly payment
+            let monthlyPayment = loanData.basicInfo.loanAmount / loanData.basicInfo.loanTerm;
 
-            const interestPaid = remainingPrincipal * monthlyInterestRate;
-            let principalPaid = monthlyPayment + addMonthPayment - interestPaid;
-            remainingPrincipal -= principalPaid;
-            totalInterestPaid += interestPaid;
+            totalInterest = (interestRate / 12) * loanData.basicInfo.loanAmount * payments
 
-            if (remainingPrincipal <= 0 || Number.parseFloat((remainingPrincipal * 100).toFixed(2)) == 0 ) {
-                // the monthly payment is more than the actual amount of loan left
-                bLastMonth = true;
-                monthlyPayment = remainingPrincipal + principalPaid;
-                principalPaid = monthlyPayment + addMonthPayment - interestPaid
-                remainingPrincipal = 0;
-            }
+            let totalInterestPaid = 0;
 
-            if (includeAddPayments) {
+            // Calculate the total amount paid
+            totalAmount = loanData.basicInfo.loanAmount + totalInterest;
+
+            // Initialize the balance to the principal
+            balance = loanData.basicInfo.loanAmount;
+
+            // Loop through each payment and calculate the monthly interest and balance
+            for (var index = 1; index <= payments; index++) {
+                const currentMonth = startMonth.add(1, 'M');
+
+                var monthlyInterest = balance * monthlyRate;
+                var monthlyPrincipal = monthlyPayment;
+                balance = balance - monthlyPrincipal;
+
+                totalInterestPaid += monthlyInterest;
+                // Round the values to two decimal places
+                // monthlyPayment = monthlyPayment.toFixed(2);
+                // monthlyInterest = monthlyInterest.toFixed(2);
+                // monthlyPrincipal = monthlyPrincipal.toFixed(2);
+                // balance = balance.toFixed(2);
+
+                // Output the payment details to the console
+                let output = "Payment #" + index + ":";
+                output += " Monthly payment: $" + (monthlyPayment + monthlyInterest).toFixed(2);
+                output += " Monthly interest: $" + monthlyInterest.toFixed(2);
+                output += " Monthly principal: $" + monthlyPrincipal.toFixed(2);
+                output += " Balance: $" + balance.toFixed(2);
+
+                console.log(output);
+
                 loanData.allPaymentsData.perMonth.push({
                     index,
                     currentMonth: currentMonth.format("MM/YYYY"),
-                    monthlyPayment,
-                    addMonthPayment,
-                    principalPaid,
-                    interestPaid,
+                    monthlyPayment: monthlyPayment + monthlyInterest,
+                    addMonthPayment: 0,
+                    principalPaid: monthlyPrincipal,
+                    interestPaid: monthlyInterest,
                     totalInterestPaid,
-                    remainingPrincipal
+                    remainingPrincipal: balance
                 });
-            } else {
-                loanData.noAddPaymentsData.perMonth.push({
+
+                // Line chart data
+                includeAddPayments && loanData.lineChartData.push([
                     index,
-                    currentMonth: currentMonth.format("MM/YYYY"),
-                    monthlyPayment,
-                    addMonthPayment,
-                    principalPaid,
-                    interestPaid,
-                    totalInterestPaid,
-                    remainingPrincipal
-                });
+                    balance, //remainingPrincipal,
+                    totalInterestPaid
+                ]);
             }
 
-            // Line chart data
-            includeAddPayments && loanData.lineChartData.push([
-                index,
-                remainingPrincipal,
-                totalInterestPaid
-            ]);
+            // Extract total interest
+            includeAddPayments ?
+                loanData.allPaymentsData.totalInterestPaid = totalInterestPaid :
+                loanData.noAddPaymentsData.totalInterestPaid = totalInterestPaid;
 
-            if (bLastMonth) {
-                // Extract total interest
-                includeAddPayments ?
-                    loanData.allPaymentsData.totalInterestPaid = totalInterestPaid :
-                    loanData.noAddPaymentsData.totalInterestPaid = totalInterestPaid;
+            // Pie chart data
+            includeAddPayments && loanData.pieChartData.push(["Principal", loanData.basicInfo.loanAmount]);
+            includeAddPayments && loanData.pieChartData.push(["Interest", totalInterestPaid]);
+        } else {
+            // Fixed monthly payment
+            let monthlyPayment =
+                (loanData.basicInfo.loanAmount * monthlyInterestRate) /
+                (1 - Math.pow(1 + monthlyInterestRate, -loanData.basicInfo.loanTerm));
 
-                // Pie chart data
-                includeAddPayments && loanData.pieChartData.push(["Principal", loanData.basicInfo.loanAmount]);
-                includeAddPayments && loanData.pieChartData.push(["Interest", totalInterestPaid]);
-                break;
+            let remainingPrincipal = loanData.basicInfo.loanAmount;
+            let totalInterestPaid = 0;
+
+            for (let index = 1; index <= loanData.basicInfo.loanTerm; index++) {
+                let bLastMonth = false;
+                let addMonthPayment = 0; // Used for the month with additional payment
+                const currentMonth = startMonth.add(1, 'M');
+
+                //Gather additional payments and substract them from the remaining balance
+                includeAddPayments && loanData.additionalPayments.forEach((payment) => {
+                    if (payment[0] === index) {
+                        if(!isNaN(payment[1])) {
+                            // the amount that was payed additionally
+                            addMonthPayment += payment[1];
+                        }
+
+                        if (payment[2]) {
+                            // new monthly payment if such arrangement was made
+                            monthlyPayment = payment[2];
+                        }
+                    }
+                });
+
+                const interestPaid = remainingPrincipal * monthlyInterestRate;
+                let principalPaid = monthlyPayment + addMonthPayment - interestPaid;
+                remainingPrincipal -= principalPaid;
+                totalInterestPaid += interestPaid;
+
+                if (remainingPrincipal <= 0 || Number.parseFloat((remainingPrincipal * 100).toFixed(2)) == 0 ) {
+                    // the monthly payment is more than the actual amount of loan left
+                    bLastMonth = true;
+                    monthlyPayment = remainingPrincipal + principalPaid;
+                    principalPaid = monthlyPayment + addMonthPayment - interestPaid
+                    remainingPrincipal = 0;
+                }
+
+                if (includeAddPayments) {
+                    loanData.allPaymentsData.perMonth.push({
+                        index,
+                        currentMonth: currentMonth.format("MM/YYYY"),
+                        monthlyPayment,
+                        addMonthPayment,
+                        principalPaid,
+                        interestPaid,
+                        totalInterestPaid,
+                        remainingPrincipal
+                    });
+                } else {
+                    loanData.noAddPaymentsData.perMonth.push({
+                        index,
+                        currentMonth: currentMonth.format("MM/YYYY"),
+                        monthlyPayment,
+                        addMonthPayment,
+                        principalPaid,
+                        interestPaid,
+                        totalInterestPaid,
+                        remainingPrincipal
+                    });
+                }
+
+                // Line chart data
+                includeAddPayments && loanData.lineChartData.push([
+                    index,
+                    remainingPrincipal,
+                    totalInterestPaid
+                ]);
+
+                if (bLastMonth) {
+                    // Extract total interest
+                    includeAddPayments ?
+                        loanData.allPaymentsData.totalInterestPaid = totalInterestPaid :
+                        loanData.noAddPaymentsData.totalInterestPaid = totalInterestPaid;
+
+                    // Pie chart data
+                    includeAddPayments && loanData.pieChartData.push(["Principal", loanData.basicInfo.loanAmount]);
+                    includeAddPayments && loanData.pieChartData.push(["Interest", totalInterestPaid]);
+                    break;
+                }
             }
         }
     }
@@ -130,6 +209,7 @@ export function setUpCalc(element) {
         const loanAmount = Number.parseFloat(document.getElementById("loanAmount").value);
         const interestRate = Number.parseFloat(document.getElementById("interestRate").value) / 100;
         const loanTerm = Number.parseFloat(document.getElementById("loanTerm").value);
+        const fixedPrincipal = document.getElementById('fixedPrincipal').checked;
 
         // Gather additional payments
         const additionalPayments = gatherAdditionalPayments();
@@ -168,8 +248,8 @@ export function setUpCalc(element) {
             pieChartData
         }
 
-        additionalPayments.length && calcLoanData(allPaymentsData, false);
-        calcLoanData(allPaymentsData, true);
+        additionalPayments.length && calcLoanData(allPaymentsData, false, fixedPrincipal);
+        calcLoanData(allPaymentsData, true, fixedPrincipal);
 
         generateAdditionalInformation(allPaymentsData);
 

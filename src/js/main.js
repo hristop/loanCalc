@@ -15,6 +15,7 @@ import "@ui5/webcomponents/dist/Label";
 import "@ui5/webcomponents/dist/Panel";
 import "@ui5/webcomponents/dist/Title";
 import "@ui5/webcomponents/dist/Badge";
+import "@ui5/webcomponents/dist/CheckBox";
 import "@ui5/webcomponents/dist/MessageStrip";
 import "@ui5/webcomponents/dist/Icon";
 import "@ui5/webcomponents-icons/dist/delete";
@@ -42,4 +43,10 @@ startDate.setAttribute('value', today);
 
 setUpExtraPayments(document.getElementById('addExtraPayment'));
 setUpCalc(document.getElementById('calcBtn'));
-
+document.getElementById('fixedPrincipal').addEventListener('change', event => {
+    if (event.target.checked) {
+        document.getElementById('addExtraPayment').setAttribute('disabled', true);
+    } else {
+        document.getElementById('addExtraPayment').removeAttribute('disabled');
+    }
+});
