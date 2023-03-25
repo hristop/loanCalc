@@ -39,7 +39,7 @@ const renderMonthTableStart = (data) => {
                     <span><b>0</b></span>
                 </ui5-table-cell>
                 <ui5-table-cell>
-                    <span><b>${data.startMonth}</b></span>
+                    <span><b>${moment(data.startDate, 'DD/MM/YYYY').format('MM/YYYY')}</b></span>
                 </ui5-table-cell>
                 <ui5-table-cell>
                     <span><b>-</b></span>
@@ -62,14 +62,14 @@ const renderMonthTableStart = (data) => {
 
 const renderMonthTableRow = data => {
     const currentMonth = moment().format('MM/YYYY');
-    const bMark = currentMonth === data.currentMonth;
+    const bMark = currentMonth === moment(data.currentMonth, 'DD/MM/YYYY').format('MM/YYYY');
     return `
         <ui5-table-row ${bMark ? 'navigated' : ''}>
             <ui5-table-cell>
                 <span><b>${data.index}</b></span>
             </ui5-table-cell>
             <ui5-table-cell>
-                <span><b>${data.currentMonth}</b></span>
+                <span><b>${moment(data.currentMonth, 'DD/MM/YYYY').format('MM/YYYY')}</b></span>
             </ui5-table-cell>
             <ui5-table-cell>
                 <span><b>${(data.monthlyPayment + data.addMonthPayment).toFixed(2)}</b></span>

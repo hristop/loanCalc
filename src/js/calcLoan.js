@@ -8,7 +8,7 @@ import moment from 'moment';
 export function setUpCalc(element) {
     const calcLoanData = (loanData, includeAddPayments, isFixedPrincipal) => {
         // Calculate monthly payment
-        let startMonth = moment(loanData.basicInfo.startMonth, "MM/YYYY");
+        let startMonth = moment(loanData.basicInfo.startDate, "DD/MM/YYYY");
         // Calculate the monthly interest rate
         const monthlyInterestRate = loanData.basicInfo.interestRate / 12;
 
@@ -52,16 +52,40 @@ export function setUpCalc(element) {
                 totalMonthlyInterest += monthlyInterest;
 
                 // Log payment details for this month
-                loanData.allPaymentsData.perMonth.push({
-                    index,
-                    currentMonth: currentMonth.format("MM/YYYY"),
-                    monthlyPayment,
-                    addMonthPayment,
-                    monthlyPrincipal,
-                    monthlyInterest,
-                    totalMonthlyInterest,
-                    remainingPrincipal
-                });
+                if (includeAddPayments) {
+                    loanData.allPaymentsData.perMonth.push({
+                        index,
+                        currentMonth: currentMonth.format('DD/MM/YYYY'),
+                        monthlyPayment,
+                        addMonthPayment,
+                        monthlyPrincipal,
+                        monthlyInterest,
+                        totalMonthlyInterest,
+                        remainingPrincipal
+                    });
+                } else {
+                    loanData.noAddPaymentsData.perMonth.push({
+                        index,
+                        currentMonth: currentMonth.format('DD/MM/YYYY'),
+                        monthlyPayment,
+                        addMonthPayment,
+                        monthlyPrincipal,
+                        monthlyInterest,
+                        totalMonthlyInterest,
+                        remainingPrincipal
+                    });
+                }
+
+                // loanData.allPaymentsData.perMonth.push({
+                //     index,
+                //     currentMonth: currentMonth.format('DD/MM/YYYY'),
+                //     monthlyPayment,
+                //     addMonthPayment,
+                //     monthlyPrincipal,
+                //     monthlyInterest,
+                //     totalMonthlyInterest,
+                //     remainingPrincipal
+                // });
 
                 // Line chart data
                 includeAddPayments && loanData.lineChartData.push([
@@ -128,7 +152,7 @@ export function setUpCalc(element) {
                 if (includeAddPayments) {
                     loanData.allPaymentsData.perMonth.push({
                         index,
-                        currentMonth: currentMonth.format("MM/YYYY"),
+                        currentMonth: currentMonth.format('DD/MM/YYYY'),
                         monthlyPayment,
                         addMonthPayment,
                         monthlyPrincipal,
@@ -139,7 +163,7 @@ export function setUpCalc(element) {
                 } else {
                     loanData.noAddPaymentsData.perMonth.push({
                         index,
-                        currentMonth: currentMonth.format("MM/YYYY"),
+                        currentMonth: currentMonth.format('DD/MM/YYYY'),
                         monthlyPayment,
                         addMonthPayment,
                         monthlyPrincipal,
@@ -173,25 +197,32 @@ export function setUpCalc(element) {
 
     const generateAdditionalInformation = loanData => {
         const info = document.getElementById('info');
-
+        const currentFinalPaymentDate = loanData.allPaymentsData.perMonth[loanData.allPaymentsData.perMonth.length - 1].currentMonth;
         loanData.allPaymentsData.currentTotalPayment = loanData.basicInfo.loanAmount + loanData.allPaymentsData.totalInterest;
 
         let infoHtml = `
             <div>
-                <ui5-badge color-scheme="6">Total payment: ${(loanData.allPaymentsData.currentTotalPayment).toFixed(2)}</ui5-badge>
-                <br>
-                <ui5-badge color-scheme="1">Interest: ${(loanData.allPaymentsData.totalInterest).toFixed(2)}</ui5-badge>
-                <br>
+                <ui5-list separators="None">
+                    <ui5-li additional-text="${(loanData.allPaymentsData.currentTotalPayment).toFixed(2)}" additional-text-state="Success">Total payment:</ui5-li>
+                    <ui5-li additional-text="${(loanData.allPaymentsData.totalInterest).toFixed(2)}" additional-text-state="Error">Interest:</ui5-li>
+                    <ui5-li additional-text="${currentFinalPaymentDate}">Final payment:</ui5-li>
+                    <ui5-li additional-text="${loanData.allPaymentsData.perMonth.length}">Number of payments:</ui5-li>
+                </ui5-list>
             </div>
         `;
 
         if (loanData.additionalPayments.length) {
+            const paymentsSaved = loanData.noAddPaymentsData.perMonth.length - loanData.allPaymentsData.perMonth.length;
+            const timeSaved = moment.duration(paymentsSaved, 'M');
+            timeSaved.add(1, "d");
             infoHtml += `
                 <div>
-                    <ui5-badge color-scheme="5">Initial total payment: ${(loanData.basicInfo.loanAmount + loanData.noAddPaymentsData.totalInterest).toFixed(2)}</ui5-badge>
-                    <br>
-                    <ui5-badge color-scheme="8">Interest saved: ${(loanData.noAddPaymentsData.totalInterest - loanData.allPaymentsData.totalInterest).toFixed(2)}</ui5-badge>
-                    <br>
+                    <ui5-list separators="None">
+                        <ui5-li additional-text="${(loanData.basicInfo.loanAmount + loanData.noAddPaymentsData.totalInterest).toFixed(2)}" additional-text-state="Information">Initial total payment:</ui5-li>
+                        <ui5-li additional-text="${(loanData.noAddPaymentsData.totalInterest - loanData.allPaymentsData.totalInterest).toFixed(2)}" additional-text-state="Success">Interest saved:</ui5-li>
+                        <ui5-li additional-text="${paymentsSaved}" additional-text-state="Success">Number of payments saved:</ui5-li>
+                        <ui5-li ${Math.abs(timeSaved.asMonths()) > 1 ? '' : 'class="hidden"'} additional-text="${timeSaved.years() !== 0 ? Math.abs(timeSaved.years()) + ' years' : ""} ${timeSaved.months() !== 0 ? Math.abs(timeSaved.months()) + ' months' : ""}" additional-text-state="Success">Time saved:</ui5-li>
+                    </ui5-list>
                 </div>
             `;
         }
@@ -218,7 +249,6 @@ export function setUpCalc(element) {
             return;
         }
 
-        const startMonth = startDate.format('MM/YYYY');
         let lineChartData = [
             ["Month", "Principal", "Interest"],
             [0, loanAmount, 0],
@@ -232,7 +262,7 @@ export function setUpCalc(element) {
 
         let allData = {
             basicInfo: {
-                startMonth,
+                startDate: startDate.format('DD/MM/YYYY'),
                 loanAmount,
                 interestRate,
                 loanTerm
@@ -259,7 +289,7 @@ export function setUpCalc(element) {
         let tableHtml = allData.allPaymentsData.perMonth.reduce((tableHtml, rowData) => {
             return tableHtml += renderMonthTableRow(rowData);
         }, renderMonthTableStart({
-            startMonth,
+            startDate: startDate.format('DD/MM/YYYY'),
             loanAmount
         }));
         tableHtml += renderMonthTableEnd();

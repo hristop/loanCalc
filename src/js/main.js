@@ -14,10 +14,12 @@ import "@ui5/webcomponents/dist/TableColumn";
 import "@ui5/webcomponents/dist/Label";
 import "@ui5/webcomponents/dist/Panel";
 import "@ui5/webcomponents/dist/Title";
-import "@ui5/webcomponents/dist/Badge";
 import "@ui5/webcomponents/dist/CheckBox";
 import "@ui5/webcomponents/dist/MessageStrip";
 import "@ui5/webcomponents/dist/Icon";
+import "@ui5/webcomponents/dist/List";
+import "@ui5/webcomponents/dist/StandardListItem.js";
+
 import "@ui5/webcomponents-icons/dist/delete";
 
 //import { setLanguage } from "@ui5/webcomponents-base/dist/config/Language.js";
