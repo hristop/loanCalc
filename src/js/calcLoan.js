@@ -7,18 +7,20 @@ import moment from 'moment';
 
 export function setUpCalc(element) {
     const calcLoanData = (loanData, includeAddPayments, isFixedPrincipal) => {
-        // Calculate monthly payment
         let startMonth = moment(loanData.basicInfo.startDate, "DD/MM/YYYY");
+
         // Calculate the monthly interest rate
         const monthlyInterestRate = loanData.basicInfo.interestRate / 12;
 
+        // This will hold the comulative interest for each month
+        let totalMonthlyInterest = 0;
+
+        // Initialize remaning principal to the loan amount
+        let remainingPrincipal = loanData.basicInfo.loanAmount;
+
         if (isFixedPrincipal) {
             // Fixed principal payment (varying monthly)
-            let totalMonthlyInterest = 0;
             let fixedPrincipalPayment = loanData.basicInfo.loanAmount / loanData.basicInfo.loanTerm;
-
-            // Initialize balance to loan amount
-            let remainingPrincipal = loanData.basicInfo.loanAmount;
 
             for (let index = 1; index <= loanData.basicInfo.loanTerm; index++) {
                 const currentMonth = startMonth.add(1, 'M');
@@ -76,17 +78,6 @@ export function setUpCalc(element) {
                     });
                 }
 
-                // loanData.allPaymentsData.perMonth.push({
-                //     index,
-                //     currentMonth: currentMonth.format('DD/MM/YYYY'),
-                //     monthlyPayment,
-                //     addMonthPayment,
-                //     monthlyPrincipal,
-                //     monthlyInterest,
-                //     totalMonthlyInterest,
-                //     remainingPrincipal
-                // });
-
                 // Line chart data
                 includeAddPayments && loanData.lineChartData.push([
                     index,
@@ -112,9 +103,6 @@ export function setUpCalc(element) {
             let monthlyPayment =
                 (loanData.basicInfo.loanAmount * monthlyInterestRate) /
                 (1 - Math.pow(1 + monthlyInterestRate, -loanData.basicInfo.loanTerm));
-
-            let remainingPrincipal = loanData.basicInfo.loanAmount;
-            let totalMonthlyInterest = 0;
 
             for (let index = 1; index <= loanData.basicInfo.loanTerm; index++) {
                 let bLastMonth = false;

@@ -2,6 +2,8 @@ import '../css/style.css'
 import { setUpCalc } from './calcLoan'
 import { setUpExtraPayments } from './extraPayment';
 
+import moment from 'moment';
+
 import "@ui5/webcomponents/dist/Button.js";
 import "@ui5/webcomponents/dist/Input.js";
 import "@ui5/webcomponents/dist/Label.js";
@@ -32,23 +34,8 @@ setTheme("sap_horizon");
 google.charts.load("current", { packages: ["corechart"] });
 //google.charts.setOnLoadCallback(drawChart);
 
-let today = new Date();
-const dd = String(today.getDate()).padStart(2, '0');
-const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-const yyyy = today.getFullYear();
-
-today = dd + '/' + mm + '/' + yyyy;
-
 const startDate = document.getElementById("startDate");
-startDate.setAttribute('value', today);
-// startDate.setAttribute('max-date', today);
+startDate.setAttribute('value', moment().format('DD/MM/YYYY'));
 
 setUpExtraPayments(document.getElementById('addExtraPayment'));
 setUpCalc(document.getElementById('calcBtn'));
-// document.getElementById('fixedPrincipal').addEventListener('change', event => {
-//     if (event.target.checked) {
-//         document.getElementById('addExtraPayment').setAttribute('disabled', true);
-//     } else {
-//         document.getElementById('addExtraPayment').removeAttribute('disabled');
-//     }
-// });
