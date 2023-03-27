@@ -72,7 +72,7 @@ const renderMonthTableRow = data => {
                 <span><b>${moment(data.currentMonth, 'DD/MM/YYYY').format('MM/YYYY')}</b></span>
             </ui5-table-cell>
             <ui5-table-cell>
-                <span><b>${(data.monthlyPayment + data.addMonthPayment).toFixed(2)}</b></span>
+                <span><b>${data.monthlyPayment.toFixed(2)}</b></span>
             </ui5-table-cell>
             <ui5-table-cell>
                 <span><b>${data.monthlyPrincipal.toFixed(2)}</b></span>

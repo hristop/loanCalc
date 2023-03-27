@@ -25,6 +25,7 @@ export function setUpCalc(element) {
             for (let index = 1; index <= loanData.basicInfo.loanTerm; index++) {
                 const currentMonth = startMonth.add(1, 'M');
                 let addMonthPayment = 0;
+                let bLastMonth = false;
 
                 // Calculate interest for this month
                 const monthlyInterest = remainingPrincipal * monthlyInterestRate;
@@ -47,10 +48,20 @@ export function setUpCalc(element) {
                 });
 
                 // Calculate monthly payment for this month
-                const monthlyPayment = monthlyInterest + monthlyPrincipal + addMonthPayment;
+                monthlyPrincipal += addMonthPayment;
+                let monthlyPayment = monthlyInterest + monthlyPrincipal;
 
                 // Update balance for next month
-                remainingPrincipal -= (monthlyPrincipal + addMonthPayment);
+                if (monthlyPrincipal > remainingPrincipal) {
+                    // the monthly payment is more than the actual amount of loan left
+                    bLastMonth = true;
+                    monthlyPrincipal = remainingPrincipal;
+                    monthlyPayment = monthlyPrincipal + monthlyInterest;
+                    remainingPrincipal = 0;
+                } else {
+                    remainingPrincipal -= monthlyPrincipal;
+                }
+
                 totalMonthlyInterest += monthlyInterest;
 
                 // Log payment details for this month
@@ -86,7 +97,7 @@ export function setUpCalc(element) {
                 ]);
 
                 // If balance is zero or negative, break out of loop
-                if (remainingPrincipal <= 0) {
+                if (bLastMonth) {
                     // Extract total interest
                     includeAddPayments ?
                         loanData.allPaymentsData.totalInterest = totalMonthlyInterest :
@@ -100,14 +111,18 @@ export function setUpCalc(element) {
             }
         } else {
             // Fixed monthly payment
-            let monthlyPayment =
+            let variableMonthlyPayment =
                 (loanData.basicInfo.loanAmount * monthlyInterestRate) /
                 (1 - Math.pow(1 + monthlyInterestRate, -loanData.basicInfo.loanTerm));
 
             for (let index = 1; index <= loanData.basicInfo.loanTerm; index++) {
-                let bLastMonth = false;
-                let addMonthPayment = 0; // Used for the month with additional payment
                 const currentMonth = startMonth.add(1, 'M');
+                let addMonthPayment = 0; // Used for the month with additional payment
+                let bLastMonth = false;
+
+                // Payment for each month may vary if there is additional payment made
+                // or the remaining principal is less than the payment itself
+                let monthlyPayment = variableMonthlyPayment
 
                 //Gather additional payments and substract them from the remaining balance
                 includeAddPayments && loanData.additionalPayments.forEach((payment) => {
@@ -119,23 +134,27 @@ export function setUpCalc(element) {
 
                         if (payment[2]) {
                             // new monthly payment if such arrangement was made
-                            monthlyPayment = payment[2];
+                            variableMonthlyPayment = payment[2];
                         }
                     }
                 });
 
                 const monthlyInterest = remainingPrincipal * monthlyInterestRate;
-                let monthlyPrincipal = monthlyPayment + addMonthPayment - monthlyInterest;
-                remainingPrincipal -= monthlyPrincipal;
-                totalMonthlyInterest += monthlyInterest;
 
-                if (remainingPrincipal <= 0 || Number.parseFloat((remainingPrincipal * 100).toFixed(2)) == 0 ) {
+                monthlyPayment += addMonthPayment
+                let monthlyPrincipal = monthlyPayment - monthlyInterest;
+
+                if (monthlyPrincipal > remainingPrincipal) {
                     // the monthly payment is more than the actual amount of loan left
                     bLastMonth = true;
-                    monthlyPayment = remainingPrincipal + monthlyPrincipal;
-                    monthlyPrincipal = monthlyPayment + addMonthPayment - monthlyInterest
+                    monthlyPrincipal = remainingPrincipal;
+                    monthlyPayment = monthlyPrincipal + monthlyInterest;
                     remainingPrincipal = 0;
+                } else {
+                    remainingPrincipal -= monthlyPrincipal;
                 }
+
+                totalMonthlyInterest += monthlyInterest;
 
                 if (includeAddPayments) {
                     loanData.allPaymentsData.perMonth.push({
