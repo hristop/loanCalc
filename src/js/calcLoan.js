@@ -2,6 +2,7 @@ import { validInput, validateAdditionalPayments } from "./validateInput";
 import { renderMonthTableStart, renderMonthTableRow, renderMonthTableEnd } from "./monthTable";
 import { gatherAdditionalPayments } from "./extraPayment";
 import { drawLineChart, drawPieChart } from "./charts";
+import { loanData } from "./loadData";
 
 import moment from 'moment';
 
@@ -229,6 +230,9 @@ export function setUpCalc(element) {
             lineChartData,
             pieChartData
         }
+
+        const data = loanData();
+        data.setBasicLoanInfo(allData.basicInfo);
 
         additionalPayments.length && calcLoanData(allData, false, fixedPrincipal);
         calcLoanData(allData, true, fixedPrincipal);
