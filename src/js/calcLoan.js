@@ -2,32 +2,33 @@ import { validInput, validateAdditionalPayments } from "./validateInput";
 import { renderMonthTableStart, renderMonthTableRow, renderMonthTableEnd } from "./monthTable";
 import { gatherAdditionalPayments } from "./extraPayment";
 import { drawLineChart, drawPieChart } from "./charts";
+import { loanData } from "./loadData";
 
 import moment from 'moment';
 
 export function setUpCalc(element) {
-    const calcLoanData = (loanData, includeAddPayments, isFixedPrincipal) => {
-        let startMonth = moment(loanData.basicInfo.startDate, "DD/MM/YYYY");
+    const calcLoanData = (loanData, includeAddPayments) => {
+        const startMonth = moment(loanData.startDate, 'DD/MM/YYYY');
 
         // Calculate the monthly interest rate
-        const monthlyInterestRate = loanData.basicInfo.interestRate / 12;
+        const monthlyInterestRate = loanData.interestRate / 12;
 
         // This will hold the comulative interest for each month
         let totalMonthlyInterest = 0;
 
         // Initialize remaining principal to the loan amount
-        let remainingPrincipal = loanData.basicInfo.loanAmount;
+        let remainingPrincipal = loanData.loanAmount;
 
         // Fixed principal payment (varying monthly)
-        let fixedPrincipalPayment = loanData.basicInfo.loanAmount / loanData.basicInfo.loanTerm;
+        let fixedPrincipalPayment = loanData.loanAmount / loanData.loanTerm;
 
         // Fixed monthly payment
         let variableMonthlyPayment =
-            (loanData.basicInfo.loanAmount * monthlyInterestRate) /
-            (1 - Math.pow(1 + monthlyInterestRate, -loanData.basicInfo.loanTerm));
+            (loanData.loanAmount * monthlyInterestRate) /
+            (1 - Math.pow(1 + monthlyInterestRate, -loanData.loanTerm));
 
-        for (let index = 1; index <= loanData.basicInfo.loanTerm; index++) {
-            const currentMonth = startMonth.add(1, 'M');
+        for (let index = 1; index <= loanData.loanTerm; index++) {
+            const currentMonth = startMonth.add(1, 'M').format("DD/MM/YYYY");
             let bLastMonth = false;
             let newFixedPart = 0;
             let addMonthPayment = 0;
@@ -63,7 +64,7 @@ export function setUpCalc(element) {
             // which means that the loan time will be shortened and the monthly payment will
             // not be affected by the calculation
             // The new
-            if (isFixedPrincipal) {
+            if (loanData.fixedPrincipal) {
                 // Calculate principal for this month
                 monthlyPrincipal = fixedPrincipalPayment;
 
@@ -95,16 +96,16 @@ export function setUpCalc(element) {
 
             // Change fixed part for the next monthly calculations
             if (newFixedPart) {
-                isFixedPrincipal ?
+                loanData.fixedPrincipal ?
                     fixedPrincipalPayment = newFixedPart :
                     variableMonthlyPayment = newFixedPart;
             }
 
             // Log payment details for this month
             if (includeAddPayments) {
-                loanData.allPaymentsData.perMonth.push({
+                loanData.addAllPaymentsData({
                     index,
-                    currentMonth: currentMonth.format('DD/MM/YYYY'),
+                    month: currentMonth,
                     monthlyPayment,
                     addMonthPayment,
                     monthlyPrincipal,
@@ -113,9 +114,9 @@ export function setUpCalc(element) {
                     remainingPrincipal
                 });
             } else {
-                loanData.noAddPaymentsData.perMonth.push({
+                loanData.addNoAdditionalPaymentData({
                     index,
-                    currentMonth: currentMonth.format('DD/MM/YYYY'),
+                    month: currentMonth,
                     monthlyPayment,
                     addMonthPayment,
                     monthlyPrincipal,
@@ -126,7 +127,7 @@ export function setUpCalc(element) {
             }
 
             // Line chart data
-            includeAddPayments && loanData.lineChartData.push([
+            includeAddPayments && loanData.addLineChartData([
                 index,
                 remainingPrincipal,
                 totalMonthlyInterest
@@ -136,12 +137,14 @@ export function setUpCalc(element) {
             if (bLastMonth) {
                 // Extract total interest
                 includeAddPayments ?
-                    loanData.allPaymentsData.totalInterest = totalMonthlyInterest :
-                    loanData.noAddPaymentsData.totalInterest = totalMonthlyInterest;
+                    loanData.allPaymentsInterest = totalMonthlyInterest :
+                    loanData.noAddPaymentsInterest = totalMonthlyInterest;
 
                 // Pie chart data
-                includeAddPayments && loanData.pieChartData.push(["Principal", loanData.basicInfo.loanAmount]);
-                includeAddPayments && loanData.pieChartData.push(["Interest", loanData.allPaymentsData.totalInterest]);
+                includeAddPayments && loanData.addPieChartData(["Principal", loanData.loanAmount]);
+                includeAddPayments && loanData.addPieChartData(["Interest", loanData.allPaymentsInterest]);
+
+                loanData.lastPaymentDate = currentMonth;
                 break;
             }
         }
@@ -149,29 +152,28 @@ export function setUpCalc(element) {
 
     const generateAdditionalInformation = loanData => {
         const info = document.getElementById('info');
-        const currentFinalPaymentDate = loanData.allPaymentsData.perMonth[loanData.allPaymentsData.perMonth.length - 1].currentMonth;
-        loanData.allPaymentsData.currentTotalPayment = loanData.basicInfo.loanAmount + loanData.allPaymentsData.totalInterest;
+        loanData.currentTotalPayment = loanData.loanAmount + loanData.allPaymentsInterest;
 
         let infoHtml = `
             <div>
                 <ui5-list separators="None">
-                    <ui5-li additional-text="${(loanData.allPaymentsData.currentTotalPayment).toFixed(2)}" additional-text-state="Success">Total payment:</ui5-li>
-                    <ui5-li additional-text="${(loanData.allPaymentsData.totalInterest).toFixed(2)}" additional-text-state="Error">Interest:</ui5-li>
-                    <ui5-li additional-text="${currentFinalPaymentDate}">Final payment:</ui5-li>
-                    <ui5-li additional-text="${loanData.allPaymentsData.perMonth.length}">Number of payments:</ui5-li>
+                    <ui5-li additional-text="${(loanData.currentTotalPayment).toFixed(2)}" additional-text-state="Information">Total payment:</ui5-li>
+                    <ui5-li additional-text="${(loanData.allPaymentsInterest).toFixed(2)}" additional-text-state="Error">Interest:</ui5-li>
+                    <ui5-li additional-text="${loanData.lastPaymentDate}">Final payment:</ui5-li>
+                    <ui5-li additional-text="${loanData.allPaymentsData.length}">Number of payments:</ui5-li>
                 </ui5-list>
             </div>
         `;
 
         if (loanData.additionalPayments.length) {
-            const paymentsSaved = loanData.noAddPaymentsData.perMonth.length - loanData.allPaymentsData.perMonth.length;
+            const paymentsSaved = loanData.noAddPaymentsData.length - loanData.allPaymentsData.length;
             const timeSaved = moment.duration(paymentsSaved, 'M');
             timeSaved.add(1, "d");
             infoHtml += `
                 <div>
                     <ui5-list separators="None">
-                        <ui5-li additional-text="${(loanData.basicInfo.loanAmount + loanData.noAddPaymentsData.totalInterest).toFixed(2)}" additional-text-state="Information">Initial total payment:</ui5-li>
-                        <ui5-li additional-text="${(loanData.noAddPaymentsData.totalInterest - loanData.allPaymentsData.totalInterest).toFixed(2)}" additional-text-state="Success">Interest saved:</ui5-li>
+                        <ui5-li additional-text="${(loanData.loanAmount + loanData.noAddPaymentsInterest).toFixed(2)}" additional-text-state="Information">Initial total payment:</ui5-li>
+                        <ui5-li additional-text="${(loanData.noAddPaymentsInterest - loanData.allPaymentsInterest).toFixed(2)}" additional-text-state="Success">Interest saved:</ui5-li>
                         <ui5-li additional-text="${paymentsSaved}" additional-text-state="Success">Number of payments saved:</ui5-li>
                         <ui5-li ${Math.abs(timeSaved.asMonths()) > 1 ? '' : 'class="hidden"'} additional-text="${timeSaved.years() !== 0 ? Math.abs(timeSaved.years()) + ' years' : ""} ${timeSaved.months() !== 0 ? Math.abs(timeSaved.months()) + ' months' : ""}" additional-text-state="Success">Time saved:</ui5-li>
                     </ui5-list>
@@ -201,57 +203,37 @@ export function setUpCalc(element) {
             return;
         }
 
-        let lineChartData = [
-            ["Month", "Principal", "Interest"],
-            [0, loanAmount, 0],
-        ];
-        let pieChartData = [
-            ["Principal", "Interest"]
-        ];
-
         // Show all sections
         document.querySelectorAll('ui5-panel.hidden').forEach(panel => panel.classList.remove('hidden'));
 
-        let allData = {
-            basicInfo: {
-                startDate: startDate.format('DD/MM/YYYY'),
-                loanAmount,
-                interestRate,
-                loanTerm
-            },
-            additionalPayments,
-            noAddPaymentsData: {
-                perMonth: []
-            },
-            allPaymentsData: {
-                perMonth: []
-            },
-            lineChartData,
-            pieChartData
-        }
 
-        additionalPayments.length && calcLoanData(allData, false, fixedPrincipal);
-        calcLoanData(allData, true, fixedPrincipal);
+        const data = new loanData(startDate.format("DD/MM/YYYY"), loanAmount, interestRate, loanTerm, fixedPrincipal);
+        data.additionalPayments = additionalPayments;
+        data.lineChartData = [
+            ["Month", "Principal", "Interest"],
+            [0, loanAmount, 0],
+        ];
+        data.pieChartData = [
+            ["Principal", "Interest"]
+        ];
 
-        generateAdditionalInformation(allData);
+        additionalPayments.length && calcLoanData(data, false);
+        calcLoanData(data, true);
 
-        console.log(allData);
+        generateAdditionalInformation(data);
 
         // Render the per month table
-        let tableHtml = allData.allPaymentsData.perMonth.reduce((tableHtml, rowData) => {
+        let tableHtml = data.allPaymentsData.reduce((tableHtml, rowData) => {
             return tableHtml += renderMonthTableRow(rowData);
-        }, renderMonthTableStart({
-            startDate: startDate.format('DD/MM/YYYY'),
-            loanAmount
-        }));
+        }, renderMonthTableStart(data));
         tableHtml += renderMonthTableEnd();
         tableDiv.innerHTML = tableHtml;
 
         // Charts
-        drawLineChart(allData.lineChartData);
-        drawPieChart(allData.pieChartData);
+        drawLineChart(data.lineChartData);
+        drawPieChart(data.pieChartData);
 
-        allData = null;
+        data.destroy();
     }
 
     element.addEventListener('click', () => calculate());
