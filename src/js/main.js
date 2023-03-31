@@ -21,6 +21,7 @@ import "@ui5/webcomponents/dist/MessageStrip";
 import "@ui5/webcomponents/dist/Icon";
 import "@ui5/webcomponents/dist/List";
 import "@ui5/webcomponents/dist/StandardListItem.js";
+import "@ui5/webcomponents/dist/Slider";
 
 import "@ui5/webcomponents-icons/dist/delete";
 
