@@ -114,15 +114,17 @@ ui5-button {
 
 #info {
   display: flex;
-  justify-content: space-around;
+  flex-direction: column;
+  justify-content: center;
 }
 
 #info > div {
   padding: 1rem;
   display: flex;
   flex-direction: column;
+
   flex-grow: 1;
-  max-width: 35%;
+  max-width: 80%;
 }
 
 #info > div ui5-li::part(title) {
@@ -135,10 +137,16 @@ ui5-button {
   /* font-weight: bold; */
 }
 
+#chartsPanel > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 #charts {
   display: flex;
-  height: 400px;
   justify-content: space-between;
+  flex-wrap: wrap;
 }
 
 div#lineChart {
@@ -148,4 +156,30 @@ div#lineChart {
 div#pieChart {
   flex-grow: 1;
   flex-shrink: 1;
+}
+
+@media screen and (min-width: 800px) {
+  #info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+
+  #info > div {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    max-width: 35%;
+  }
+
+  #info > div ui5-li::part(title) {
+    text-align: left;
+    font-weight: bold;
+  }
+
+  #info > div ui5-li::part(additional-text) {
+    text-align: right;
+    /* font-weight: bold; */
+  }
 }

@@ -5,7 +5,7 @@ const drawLineChart = lineChartData => {
         title: "Loan Payment Schedule",
         //curveType: "function",
         legend: {
-            position: "right",
+            position: "bottom",
             alignment: "center"
         },
         hAxis: { title: "Month" },

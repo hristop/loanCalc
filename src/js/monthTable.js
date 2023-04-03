@@ -2,13 +2,13 @@ import moment from "moment";
 
 const renderMonthTableStart = (data) => {
     return `
-        <ui5-table>
+        <ui5-table sticky-column-header>
             <!-- Columns -->
             <ui5-table-column class="table-header-text-alignment" slot="columns">
                 <ui5-label>Month</ui5-label>
             </ui5-table-column>
 
-            <ui5-table-column class="table-header-text-alignment" slot="columns">
+            <ui5-table-column class="table-header-text-alignment" slot="columns" min-width="600" popin-text="Date" demand-popin>
                 <ui5-label>Date</ui5-label>
             </ui5-table-column>
 
@@ -24,7 +24,7 @@ const renderMonthTableStart = (data) => {
                 <ui5-label>Interest</ui5-label>
             </ui5-table-column>
 
-            <ui5-table-column class="table-header-text-alignment" slot="columns">
+            <ui5-table-column class="table-header-text-alignment" slot="columns"  min-width="600" popin-text="Date" demand-popin>
                 <ui5-label>Total Interest Paid</ui5-label>
             </ui5-table-column>
 
