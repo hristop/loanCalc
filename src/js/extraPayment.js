@@ -23,15 +23,15 @@ function setUpExtraPayments (addExtraPaymentsButton) {
                     <ui5-label>Payment month number</ui5-label>
                 </ui5-table-column>
 
-                <ui5-table-column class="table-header-text-alignment" slot="columns">
-                    <ui5-label>Payment ammount</ui5-label>
+                <ui5-table-column class="table-header-text-alignment" slot="columns" min-width="600" popin-text="Payment amount" demand-popin>
+                    <ui5-label>Payment amount</ui5-label>
                 </ui5-table-column>
 
-                <ui5-table-column class="table-header-text-alignment" slot="columns">
+                <ui5-table-column class="table-header-text-alignment" slot="columns" min-width="600" popin-text="New monthly payment" demand-popin>
                     <ui5-label>New monthly payment</ui5-label>
                 </ui5-table-column>
 
-                <ui5-table-column class="table-header-text-alignment" slot="columns">
+                <ui5-table-column class="table-header-text-alignment" slot="columns" min-width="400" popin-text="Delete row" demand-popin>
                     <ui5-label>Delete row</ui5-label>
                 </ui5-table-column>
             </ui5-table>

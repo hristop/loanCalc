@@ -33,9 +33,11 @@
           <div class="hidden">
             <ui5-slider id="loanTermSlider" step="1" min="0" max="30" value="15" show-tooltip show-tickmarks label-interval="2"></ui5-slider>
           </div>
+          <div>
+            <ui5-checkbox id="fixedPrincipal" text="Fixed principal" ></ui5-checkbox>
+          </div>
           <div class="extraPaymentsContainer">
             <div>
-              <ui5-checkbox id="fixedPrincipal" text="Fixed principal" ></ui5-checkbox>
               <ui5-panel
                 fixed
                 accessible-role="Complementary"
@@ -44,8 +46,10 @@
                 <ui5-button id="addExtraPayment">Add extra payment</ui5-button>
                 <ui5-title level="h2" class="hidden">Regular Payments</ui5-title>
               </ui5-panel>
-              <ui5-button id="calcBtn" design="Emphasized">Calculate</ui5-button>
             </div>
+          </div>
+          <div>
+            <ui5-button id="calcBtn" design="Emphasized">Calculate</ui5-button>
           </div>
         </form>
       </ui5-panel>

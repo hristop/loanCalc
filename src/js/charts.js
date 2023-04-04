@@ -10,7 +10,7 @@ const drawLineChart = lineChartData => {
         },
         hAxis: { title: "Month" },
         vAxis: { title: "Amount" },
-        width: 600
+        //width: 600
     };
 
     var chart = new google.visualization.LineChart(
@@ -28,7 +28,7 @@ const drawPieChart = pieChartData => {
             position: "right",
             alignment: "center"
         },
-        width: 500,
+        //width: 500,
         pieSliceText: 'value'
     };
 

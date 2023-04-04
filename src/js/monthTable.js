@@ -24,7 +24,7 @@ const renderMonthTableStart = (data) => {
                 <ui5-label>Interest</ui5-label>
             </ui5-table-column>
 
-            <ui5-table-column class="table-header-text-alignment" slot="columns"  min-width="600" popin-text="Date" demand-popin>
+            <ui5-table-column class="table-header-text-alignment" slot="columns"  min-width="600" popin-text="Total Interest Paid" demand-popin>
                 <ui5-label>Total Interest Paid</ui5-label>
             </ui5-table-column>
 
