@@ -95,16 +95,18 @@ ui5-table#extraPaymentsTable {
 }
 
 div#lineChart {
+  height: 400px;
   flex-grow: 1;
   flex-shrink: 1;
 }
 
 div#pieChart {
+  height: 400px;
   flex-grow: 1;
   flex-shrink: 1;
 }
 
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 800px) {
   body {
     margin: 0;
     display: flex;

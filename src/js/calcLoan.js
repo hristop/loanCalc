@@ -2,7 +2,9 @@ import { validInput, validateAdditionalPayments } from "./validateInput";
 import { renderMonthTableStart, renderMonthTableRow, renderMonthTableEnd } from "./monthTable";
 import { gatherAdditionalPayments } from "./extraPayment";
 import { drawLineChart, drawPieChart } from "./charts";
+import { drawLineChartH, drawPieChartH } from "./chartsH";
 import { loanData } from "./loadData";
+
 
 import moment from 'moment';
 
@@ -127,6 +129,7 @@ export function setUpCalc(element) {
             }
 
             // Line chart data
+            // Google chards data
             includeAddPayments && loanData.addLineChartData([
                 index,
                 remainingPrincipal,
@@ -210,11 +213,11 @@ export function setUpCalc(element) {
         const data = new loanData(startDate.format("DD/MM/YYYY"), loanAmount, interestRate, loanTerm, fixedPrincipal);
         data.additionalPayments = additionalPayments;
         data.lineChartData = [
-            ["Month", "Principal", "Interest"],
+            //["Month", "Principal", "Interest"],
             [0, loanAmount, 0],
         ];
         data.pieChartData = [
-            ["Principal", "Interest"]
+            //["Principal", "Interest"]
         ];
 
         additionalPayments.length && calcLoanData(data, false);
@@ -230,8 +233,8 @@ export function setUpCalc(element) {
         tableDiv.innerHTML = tableHtml;
 
         // Charts
-        drawLineChart(data.lineChartData);
-        drawPieChart(data.pieChartData);
+        drawLineChartH(data.lineChartData);
+        drawPieChartH(data.pieChartData);
 
         data.destroy();
     }

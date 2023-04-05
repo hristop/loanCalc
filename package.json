@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview --host"
   },
   "devDependencies": {
     "vite": "^4.1.0"
@@ -14,6 +14,7 @@
   "dependencies": {
     "@ui5/webcomponents": "^1.11.0",
     "@ui5/webcomponents-icons": "^1.11.0",
+    "highcharts": "^10.3.3",
     "moment": "^2.29.4"
   }
 }

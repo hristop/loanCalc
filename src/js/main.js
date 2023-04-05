@@ -40,3 +40,9 @@ startDate.setAttribute('value', moment().format('DD/MM/YYYY'));
 
 setUpExtraPayments(document.getElementById('addExtraPayment'));
 setUpCalc(document.getElementById('calcBtn'));
+
+// window.onresize = doALoadOfStuff;
+
+// function doALoadOfStuff() {
+//     //do a load of stuff
+// }
