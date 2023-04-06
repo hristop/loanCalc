@@ -2,18 +2,21 @@ import { validInput, validateAdditionalPayments } from "./validateInput";
 import { renderMonthTableStart, renderMonthTableRow, renderMonthTableEnd } from "./monthTable";
 import { gatherAdditionalPayments } from "./extraPayment";
 import { drawLineChart, drawPieChart } from "./charts";
-import { drawLineChartH, drawPieChartH } from "./chartsH";
 import { loanData } from "./loadData";
-
+import { gatherInterestChanges } from "./interestChanges";
 
 import moment from 'moment';
 
 export function setUpCalc(element) {
+    const calcVariableMonthlyPayment = (loanAmount, monthlyInterest, loanTerm) => {
+        return (loanAmount * monthlyInterest) / (1 - Math.pow(1 + monthlyInterest, -loanTerm));
+    };
+
     const calcLoanData = (loanData, includeAddPayments) => {
         const startMonth = moment(loanData.startDate, 'DD/MM/YYYY');
 
         // Calculate the monthly interest rate
-        const monthlyInterestRate = loanData.interestRate / 12;
+        let monthlyInterestRate = loanData.interestRate / 12;
 
         // This will hold the comulative interest for each month
         let totalMonthlyInterest = 0;
@@ -25,32 +28,53 @@ export function setUpCalc(element) {
         let fixedPrincipalPayment = loanData.loanAmount / loanData.loanTerm;
 
         // Fixed monthly payment
-        let variableMonthlyPayment =
-            (loanData.loanAmount * monthlyInterestRate) /
-            (1 - Math.pow(1 + monthlyInterestRate, -loanData.loanTerm));
+        let variableMonthlyPayment = calcVariableMonthlyPayment(loanData.loanAmount, monthlyInterestRate, loanData.loanTerm);
+            // (loanData.loanAmount * monthlyInterestRate) /
+            // (1 - Math.pow(1 + monthlyInterestRate, -loanData.loanTerm));
 
-        for (let index = 1; index <= loanData.loanTerm; index++) {
+        //for (let index = 1; index <= loanData.loanTerm; index++) {
+        let index = 0;
+        while (remainingPrincipal > 0) {
             const currentMonth = startMonth.add(1, 'M').format("DD/MM/YYYY");
             let bLastMonth = false;
             let newFixedPart = 0;
             let addMonthPayment = 0;
             let monthlyPrincipal = 0;
             let monthlyPayment = 0;
+            index ++;
+
+            loanData.interestRateChanges.forEach(interestRateChange => {
+                if (interestRateChange[0] !== index) {
+                    return;
+                }
+
+                if(!isNaN(interestRateChange[1])) {
+                    // the new interest rate should take effect (converted from %)
+                    monthlyInterestRate = interestRateChange[1] / 12 / 100;
+                    // Calculate the new variable monthly payment based on
+                    // - the remaining loan principal
+                    // - the new interest rate
+                    // - the remaining time
+                    // variableMonthlyPayment = calcVariableMonthlyPayment(remainingPrincipal, monthlyInterestRate, Math.abs(loanData.loanTerm - index));
+                }
+            })
 
             // Gather additional payments info that will affect the monthly payment, principal and balance
             // If the monthly fixed part changed - reflect it for next months
             includeAddPayments && loanData.additionalPayments.forEach((payment) => {
-                if (payment[0] === index) {
-                    if(!isNaN(payment[1])) {
-                        // the amount that was payed additionally
-                        addMonthPayment += payment[1];
-                    }
+                if (payment[0] !== index) {
+                    return;
+                }
 
-                    if (payment[2]) {
-                        // new monthly payment or fixed principal
-                        // if such arrangement was made with the loan provider
-                        newFixedPart = payment[2];
-                    }
+                if(!isNaN(payment[1])) {
+                    // the amount that was payed additionally
+                    addMonthPayment += payment[1];
+                }
+
+                if (payment[2]) {
+                    // new monthly payment or fixed principal
+                    // if such arrangement was made with the loan provider
+                    newFixedPart = payment[2];
                 }
             });
 
@@ -201,6 +225,8 @@ export function setUpCalc(element) {
 
         // Gather additional payments
         const additionalPayments = gatherAdditionalPayments();
+        const interestChanges = gatherInterestChanges();
+        console.log(interestChanges);
 
         if (!validInput(loanAmount, interestRate, loanTerm) || !validateAdditionalPayments(loanTerm, additionalPayments)) {
             return;
@@ -212,6 +238,7 @@ export function setUpCalc(element) {
 
         const data = new loanData(startDate.format("DD/MM/YYYY"), loanAmount, interestRate, loanTerm, fixedPrincipal);
         data.additionalPayments = additionalPayments;
+        data.interestRateChanges = interestChanges;
         data.lineChartData = [
             //["Month", "Principal", "Interest"],
             [0, loanAmount, 0],
@@ -233,8 +260,8 @@ export function setUpCalc(element) {
         tableDiv.innerHTML = tableHtml;
 
         // Charts
-        drawLineChartH(data.lineChartData);
-        drawPieChartH(data.pieChartData);
+        drawLineChart(data.lineChartData);
+        drawPieChart(data.pieChartData);
 
         data.destroy();
     }

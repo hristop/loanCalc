@@ -3,7 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <title>Loan Calculator</title>
   </head>
   <body data-ui5-compact-size>
@@ -12,7 +11,7 @@
       <ui5-panel
         fixed accessible-role="Complementary"
         header-text="Basic Information">
-        <span id="error"></span>
+        <div id="error"></div>
         <form>
           <div>
             <ui5-label class="label" for="startDate" required>Start Date:</ui5-label>
@@ -36,7 +35,7 @@
           <div>
             <ui5-checkbox id="fixedPrincipal" text="Fixed principal" ></ui5-checkbox>
           </div>
-          <div class="extraPaymentsContainer">
+          <div class="table-container">
             <div>
               <ui5-panel
                 fixed
@@ -44,7 +43,17 @@
                 header-text="Extra Payments" >
                 <div id="extraPayments"></div>
                 <ui5-button id="addExtraPayment">Add extra payment</ui5-button>
-                <ui5-title level="h2" class="hidden">Regular Payments</ui5-title>
+              </ui5-panel>
+            </div>
+          </div>
+          <div class="table-container">
+            <div>
+              <ui5-panel
+                fixed
+                accessible-role="Complementary"
+                header-text="Interest Rate Changes" >
+                <div id="interestChanges"></div>
+                <ui5-button id="addInterestChange">Add Interest Rate Change</ui5-button>
               </ui5-panel>
             </div>
           </div>

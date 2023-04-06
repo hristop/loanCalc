@@ -1,6 +1,7 @@
 import '../css/style.css'
 import { setUpCalc } from './calcLoan'
 import { setUpExtraPayments } from './extraPayment';
+import { setUpInterestChanges } from './interestChanges';
 
 import moment from 'moment';
 
@@ -31,18 +32,9 @@ import { setTheme } from "@ui5/webcomponents-base/dist/config/Theme.js";
 //setLanguage("es");
 setTheme("sap_horizon");
 
-// Load Google Charts API
-google.charts.load("current", { packages: ["corechart"] });
-//google.charts.setOnLoadCallback(drawChart);
-
 const startDate = document.getElementById("startDate");
 startDate.setAttribute('value', moment().format('DD/MM/YYYY'));
 
 setUpExtraPayments(document.getElementById('addExtraPayment'));
+setUpInterestChanges(document.getElementById('addInterestChange'));
 setUpCalc(document.getElementById('calcBtn'));
-
-// window.onresize = doALoadOfStuff;
-
-// function doALoadOfStuff() {
-//     //do a load of stuff
-// }

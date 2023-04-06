@@ -2,7 +2,7 @@ const gatherAdditionalPayments = () => {
     const additionalPayments = [];
     const additionalPaymentRows = document.querySelectorAll("#extraPaymentsTable ui5-table-row");
 
-    additionalPaymentRows.forEach((row, index) => {
+    additionalPaymentRows.forEach((row) => {
         const month = Number.parseFloat(row.querySelectorAll("ui5-input")[0].value);
         const ammount = Number.parseFloat(row.querySelectorAll("ui5-input")[1].value);
         const newMonthly = Number.parseFloat(row.querySelectorAll("ui5-input")[2].value) || 0;
@@ -48,7 +48,7 @@ function setUpExtraPayments (addExtraPaymentsButton) {
                 document.getElementById('extraPayments').innerHTML = '';
             }
 
-            setTimeout(() => document.getElementById("addExtraPayment").focus(), 100);
+            setTimeout(() => addExtraPaymentsButton.focus(), 100);
         }
 
         if (!containerDom.innerHTML) {

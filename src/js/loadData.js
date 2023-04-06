@@ -7,6 +7,7 @@ export class loanData {
         this._fixedPrincipal = fixedPrincipal;
 
         this._additionalPayments = [];
+        this._interestRateChanges = [];
         this._noAddPaymentsData = [];
         this._allPaymentsData = [];
         this._lineChartData = [];
@@ -65,6 +66,14 @@ export class loanData {
 
     set additionalPayments(newPaymentsArray) {
         this._additionalPayments = newPaymentsArray;
+    };
+
+    get interestRateChanges() {
+        return this._interestRateChanges;
+    };
+
+    set interestRateChanges(newInterestChangesArray) {
+        this._interestRateChanges = newInterestChangesArray;
     };
 
     get noAddPaymentsData() {
@@ -165,6 +174,9 @@ export class loanData {
 
         this._additionalPayments = null;
         delete this._additionalPayments;
+
+        this._interestRateChanges = null;
+        delete this._interestRateChanges;
 
         this._noAddPaymentsData = null;
         delete this._noAddPaymentsData;
