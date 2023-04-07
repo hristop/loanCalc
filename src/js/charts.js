@@ -1,4 +1,5 @@
 import HighCharts from 'highcharts';
+import { isPhone } from "@ui5/webcomponents-base/dist/Device.js";
 
 const extractToLineChartSeries = (data, seriesName, index) => {
     const seriesData = data.map(dataPoint => ({
@@ -14,11 +15,15 @@ const extractToLineChartSeries = (data, seriesName, index) => {
 const drawLineChart = lineChartData => {
     const remainingPrincipal = extractToLineChartSeries(lineChartData, "Principal", 1);
     const totalInterest = extractToLineChartSeries(lineChartData, "Interest", 2);
+    const bPhone = isPhone();
 
     remainingPrincipal.color = '#0070f2';
     totalInterest.color = '#aa0808';
 
     const options = {
+        chart: {
+            animation: !bPhone
+        },
         title: {
             text: 'Loan Payment Schedule'
         },
@@ -52,11 +57,20 @@ const drawLineChart = lineChartData => {
         }
     };
 
-    HighCharts.chart('lineChart', options);
+    console.log(options);
+
+    const chart = HighCharts.chart('lineChart', options);
+    if (bPhone) {
+        setTimeout(() => {chart.reflow();}, 10);
+    }
 };
 
 const drawPieChart = pieChartData => {
+    const bPhone = isPhone();
     const options = {
+        chart: {
+            animation: !bPhone
+        },
         title: {
             text: 'Loan Payment'
         },
@@ -66,6 +80,7 @@ const drawPieChart = pieChartData => {
         ],
         series: [{
             type: 'pie',
+            animation: !bPhone,
             data: [
                 {
                     name: pieChartData[0][0],
@@ -95,7 +110,10 @@ const drawPieChart = pieChartData => {
         }
     };
 
-    HighCharts.chart('pieChart', options);
+    const chart = HighCharts.chart('pieChart', options);
+    if (bPhone) {
+        setTimeout(() => {chart.reflow();}, 20);
+    }
 };
 
 export {

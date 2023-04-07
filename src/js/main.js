@@ -28,6 +28,11 @@ import "@ui5/webcomponents-icons/dist/delete";
 
 //import { setLanguage } from "@ui5/webcomponents-base/dist/config/Language.js";
 import { setTheme } from "@ui5/webcomponents-base/dist/config/Theme.js";
+import { isDesktop } from "@ui5/webcomponents-base/dist/Device.js";
+
+if (isDesktop()) {
+    document.querySelector('body').setAttribute('data-ui5-compact-size', '');
+}
 
 //setLanguage("es");
 setTheme("sap_horizon");

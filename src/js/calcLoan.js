@@ -8,7 +8,7 @@ import { gatherInterestChanges } from "./interestChanges";
 import moment from 'moment';
 
 export function setUpCalc(element) {
-    const calcVariableMonthlyPayment = (loanAmount, monthlyInterest, loanTerm) => {
+    const calcFixedMonthlyPayment = (loanAmount, monthlyInterest, loanTerm) => {
         return (loanAmount * monthlyInterest) / (1 - Math.pow(1 + monthlyInterest, -loanTerm));
     };
 
@@ -28,7 +28,7 @@ export function setUpCalc(element) {
         let fixedPrincipalPayment = loanData.loanAmount / loanData.loanTerm;
 
         // Fixed monthly payment
-        let variableMonthlyPayment = calcVariableMonthlyPayment(loanData.loanAmount, monthlyInterestRate, loanData.loanTerm);
+        let fixedMonthlyPayment = calcFixedMonthlyPayment(loanData.loanAmount, monthlyInterestRate, loanData.loanTerm);
             // (loanData.loanAmount * monthlyInterestRate) /
             // (1 - Math.pow(1 + monthlyInterestRate, -loanData.loanTerm));
 
@@ -41,6 +41,7 @@ export function setUpCalc(element) {
             let addMonthPayment = 0;
             let monthlyPrincipal = 0;
             let monthlyPayment = 0;
+            const remainingMonths = loanData.fixedPrincipal ? Math.ceil(remainingPrincipal / fixedPrincipalPayment) : Math.ceil(remainingPrincipal / fixedMonthlyPayment)
             index ++;
 
             loanData.interestRateChanges.forEach(interestRateChange => {
@@ -55,7 +56,13 @@ export function setUpCalc(element) {
                     // - the remaining loan principal
                     // - the new interest rate
                     // - the remaining time
-                    // variableMonthlyPayment = calcVariableMonthlyPayment(remainingPrincipal, monthlyInterestRate, Math.abs(loanData.loanTerm - index));
+                    // payment = remainingBalance * (monthlyInterestRate * (Math.pow(1 + monthlyInterestRate, numberOfPayments - i + 1))) / ((Math.pow(1 + monthlyInterestRate, numberOfPayments - i + 1)) - 1);
+                    fixedMonthlyPayment = remainingPrincipal * (monthlyInterestRate * (Math.pow(1 + monthlyInterestRate, remainingMonths + 1))) / ((Math.pow(1 + monthlyInterestRate, remainingMonths + 1)) - 1);
+                    //if (newPayment > fixedMonthlyPayment) {
+                    //    fixedMonthlyPayment = newPayment;
+                    //}
+                    //console.log(fixedMonthlyPayment);
+                    // fixedMonthlyPayment = calcfixedMonthlyPayment(remainingPrincipal, monthlyInterestRate, Math.abs(loanData.loanTerm - index));
                 }
             })
 
@@ -100,7 +107,7 @@ export function setUpCalc(element) {
             } else {
                 // Payment for each month may vary if there is additional payment made
                 // or the remaining principal is less than the payment itself
-                monthlyPayment = variableMonthlyPayment
+                monthlyPayment = fixedMonthlyPayment
 
                 // Calculate monthly payment
                 monthlyPayment += addMonthPayment
@@ -124,7 +131,7 @@ export function setUpCalc(element) {
             if (newFixedPart) {
                 loanData.fixedPrincipal ?
                     fixedPrincipalPayment = newFixedPart :
-                    variableMonthlyPayment = newFixedPart;
+                    fixedMonthlyPayment = newFixedPart;
             }
 
             // Log payment details for this month
@@ -226,7 +233,6 @@ export function setUpCalc(element) {
         // Gather additional payments
         const additionalPayments = gatherAdditionalPayments();
         const interestChanges = gatherInterestChanges();
-        console.log(interestChanges);
 
         if (!validInput(loanAmount, interestRate, loanTerm) || !validateAdditionalPayments(loanTerm, additionalPayments)) {
             return;
@@ -262,7 +268,6 @@ export function setUpCalc(element) {
         // Charts
         drawLineChart(data.lineChartData);
         drawPieChart(data.pieChartData);
-
         data.destroy();
     }
 

@@ -43,9 +43,16 @@ main {
 
 form > div {
   text-align: center;
+  vertical-align: baseline;
+  margin-bottom: 0.5rem;
 }
 
-ui5-panel {
+form > div > * {
+  vertical-align: middle;
+  vertical-align: -webkit-baseline-middle;
+}
+
+main > ui5-panel {
   width: 100%;
   margin: 0.5rem auto 0.5rem auto;
 }
@@ -111,11 +118,13 @@ ui5-table#interestChangesTable {
 div#lineChart {
   height: 400px;
   max-width: 100%;
+  overflow: hidden;
 }
 
 div#pieChart {
   height: 400px;
   max-width: 100%;
+  overflow: hidden;
 }
 
 /* ---------- LARGER SCREENS -------------- */
@@ -149,7 +158,7 @@ div#pieChart {
     justify-content: center;
     align-items: normal;
     align-content: normal;
-    row-gap: 1rem;
+    row-gap: 0;
   }
 
   form > div {
