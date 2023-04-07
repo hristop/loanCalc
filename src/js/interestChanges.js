@@ -1,14 +1,16 @@
 const gatherInterestChanges = () => {
     const interestChanges = [];
-    const interestChangesRows = document.querySelectorAll("#interestChangesTable ui5-table-row");
+    const interestChangesRows = document.querySelectorAll('#interestChangesTable ui5-table-row');
 
     interestChangesRows.forEach((row) => {
-        const inputs = row.querySelectorAll("ui5-input");
+        const inputs = row.querySelectorAll('ui5-input');
+        const recalculateSwitch = row.querySelector('ui5-switch');
 
         const month = Number.parseFloat(inputs[0].value);
         const newMonthly = Number.parseFloat(inputs[1].value) || 0;
+        const recalculatePayment = recalculateSwitch.getAttribute('checked') === '';
 
-        interestChanges.push([month, newMonthly]);
+        interestChanges.push([month, newMonthly, recalculatePayment]);
     });
 
     return interestChanges;
@@ -26,6 +28,10 @@ function setUpInterestChanges (addInterestChangesButton) {
 
                 <ui5-table-column class="table-header-text-alignment" slot="columns" min-width="600" popin-text="Payment amount" demand-popin>
                     <ui5-label>New Interest</ui5-label>
+                </ui5-table-column>
+
+                <ui5-table-column class="table-header-text-alignment" slot="columns" min-width="400" popin-text="Recalculate payment" demand-popin>
+                    <ui5-label>Recalculate Payment</ui5-label>
                 </ui5-table-column>
 
                 <ui5-table-column class="table-header-text-alignment" slot="columns" min-width="400" popin-text="Delete row" demand-popin>
@@ -64,11 +70,19 @@ function setUpInterestChanges (addInterestChangesButton) {
         });
 
         const cell = document.createElement('ui5-table-cell')
+        const recalculateSwitch = document.createElement('ui5-switch');
+        recalculateSwitch.setAttribute('text-on', 'Yes');
+        recalculateSwitch.setAttribute('text-off', 'No');
+        cell.appendChild(recalculateSwitch);
+        row.appendChild(cell);
+
+
+        const cellDel = document.createElement('ui5-table-cell')
         const button = document.createElement('ui5-button');
         button.setAttribute('icon', 'delete');
         button.addEventListener('click', () => deleteRow(row));
-        cell.appendChild(button);
-        row.appendChild(cell);
+        cellDel.appendChild(button);
+        row.appendChild(cellDel);
 
         table.appendChild(row);
 

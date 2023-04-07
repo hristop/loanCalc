@@ -52,17 +52,20 @@ export function setUpCalc(element) {
                 if(!isNaN(interestRateChange[1])) {
                     // the new interest rate should take effect (converted from %)
                     monthlyInterestRate = interestRateChange[1] / 12 / 100;
-                    // Calculate the new variable monthly payment based on
-                    // - the remaining loan principal
-                    // - the new interest rate
-                    // - the remaining time
-                    // payment = remainingBalance * (monthlyInterestRate * (Math.pow(1 + monthlyInterestRate, numberOfPayments - i + 1))) / ((Math.pow(1 + monthlyInterestRate, numberOfPayments - i + 1)) - 1);
-                    fixedMonthlyPayment = remainingPrincipal * (monthlyInterestRate * (Math.pow(1 + monthlyInterestRate, remainingMonths + 1))) / ((Math.pow(1 + monthlyInterestRate, remainingMonths + 1)) - 1);
-                    //if (newPayment > fixedMonthlyPayment) {
-                    //    fixedMonthlyPayment = newPayment;
-                    //}
-                    //console.log(fixedMonthlyPayment);
-                    // fixedMonthlyPayment = calcfixedMonthlyPayment(remainingPrincipal, monthlyInterestRate, Math.abs(loanData.loanTerm - index));
+                    console.log(interestRateChange[2]);
+                    if (interestRateChange[2]) {
+                        // Calculate the new variable monthly payment based on
+                        // - the remaining loan principal
+                        // - the new interest rate
+                        // - the remaining time
+                        // payment = remainingBalance * (monthlyInterestRate * (Math.pow(1 + monthlyInterestRate, numberOfPayments - i + 1))) / ((Math.pow(1 + monthlyInterestRate, numberOfPayments - i + 1)) - 1);
+                        fixedMonthlyPayment = remainingPrincipal * (monthlyInterestRate * (Math.pow(1 + monthlyInterestRate, remainingMonths + 1))) / ((Math.pow(1 + monthlyInterestRate, remainingMonths + 1)) - 1);
+                        //if (newPayment > fixedMonthlyPayment) {
+                        //    fixedMonthlyPayment = newPayment;
+                        //}
+                        //console.log(fixedMonthlyPayment);
+                        //const fixedMonthlyPayment2 = calcFixedMonthlyPayment(remainingPrincipal, monthlyInterestRate, Math.abs(loanData.loanTerm - index));
+                    }
                 }
             })
 
